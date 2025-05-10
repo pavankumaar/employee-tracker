@@ -1,38 +1,414 @@
-.App {
-  text-align: center;
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+@import './components/components.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+  margin: 0;
+  height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+button:hover {
+  background-color: #2980b9;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.map-container {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  background-color: #2a5674; /* Ocean blue background */
+  border-right: 1px solid #ddd;
+  position: relative;
+  overflow: hidden;
+  height: 600px; /* Fixed height instead of 100% */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: flex-start;
+  border-radius: 8px;
+  margin: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Make sure the SVG takes up the full container */
+.map-container svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fix for map visibility */
+.rsm-geographies {
+  pointer-events: auto !important;
+}
+
+/* Live indicator styles */
+.live-indicator {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 100;
 }
 
-.App-link {
-  color: #61dafb;
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1s infinite;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.update-time {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+/* Pulse animation for markers */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(0.5);
   }
-  to {
-    transform: rotate(360deg);
+  100% {
+    opacity: 0;
+    transform: scale(2);
   }
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.rsm-geography {
+  outline: none !important;
+  pointer-events: auto !important;
+}
+
+.map-title {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  font-size: 0.9rem;
+  display: flex;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid white;
+}
+
+.legend-marker.employee {
+  background-color: #F00;
+}
+
+.legend-marker.selected {
+  background-color: #FF8C00;
+}
+
+.legend-marker.city {
+  background-color: #4CAF50;
+}
+
+.legend-line {
+  width: 20px;
+  height: 2px;
+  background-color: #FF9800;
+  margin-right: 8px;
+  position: relative;
+}
+
+.legend-line:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    #FF9800,
+    #FF9800 3px,
+    transparent 3px,
+    transparent 6px
+  );
+}
+
+.loading, .error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.employee-list {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  max-height: 60vh;
+}
+
+.employee-list h2 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: #2c3e50;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding-bottom: 0.5rem;
+  z-index: 1;
+}
+
+.employee-list ul {
+  list-style: none;
+  overflow-y: auto;
+}
+
+.employee-list li {
+  padding: 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.employee-list li:hover {
+  background-color: #eef2f7;
+}
+
+.employee-list li.selected {
+  background-color: #e1f0fa;
+  border-left: 4px solid #3498db;
+}
+
+.employee-list li p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+.employee-list li small {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.employee-details {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 1rem;
+  background-color: #fff;
+  height: 40vh;
+  overflow-y: auto;
+}
+
+.employee-details h2 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.detail-card {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.detail-label {
+  font-weight: bold;
+  width: 120px;
+  color: #34495e;
+}
+
+.detail-value {
+  flex: 1;
+  color: #2c3e50;
+}
+
+.live-update {
+  color: #FF8C00 !important;
+  position: relative;
+  padding-left: 15px;
+}
+
+.live-update::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background-color: #FF8C00;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+.no-selection {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #95a5a6;
+  font-style: italic;
+}
+
+/* Map styling */
+path {
+  outline: none;
+}
+
+circle {
+  transition: r 0.2s, fill 0.2s;
+}
+
+circle:hover {
+  cursor: pointer;
+  r: 8;
+}
+
+.rsm-geography {
+  outline: none;
+  transition: fill 0.2s;
+}
+
+/* Tooltip for map markers */
+.marker-tooltip {
+  position: absolute;
+  background: white;
+  border-radius: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  border-left: 3px solid #FF8C00;
+  min-width: 180px;
+}
+
+.tooltip-name {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.tooltip-coordinates {
+  font-size: 10px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.tooltip-update {
+  font-size: 10px;
+  color: #FF8C00;
+  font-style: italic;
+}
+
+/* Route styling */
+.rsm-line {
+  transition: stroke-width 0.2s;
+}
+
+.rsm-line:hover {
+  stroke-width: 3;
+}
+
+/* Annotation styling */
+.rsm-annotation text {
+  filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.5));
+}
+
+/* City marker styling */
+.city-marker text {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.city-marker:hover text {
+  opacity: 1;
 }

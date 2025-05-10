@@ -1,0 +1,121 @@
+/* Map Sidebar Styles */
+.map-sidebar {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 600px;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.employee-dropdown {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.dropdown-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #2c3e50;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-container {
+  position: relative;
+  padding: 0.8rem;
+  border-bottom: 1px solid #eee;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem 0.6rem 2rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-list li {
+  padding: 0.8rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dropdown-list li:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-list li.selected {
+  background-color: #e3f2fd;
+  border-left: 3px solid #3498db;
+}
+
+.dropdown-list li strong {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.dropdown-list li p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.dropdown-loading, .no-results {
+  padding: 1rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+/* Employee Details in Map Page */
+.map-sidebar .employee-details {
+  flex: 1;
+  padding: 1rem;
+  background-color: #fff;
+  overflow-y: auto;
+  border-top: 1px solid #eee;
+  grid-column: auto;
+  grid-row: auto;
+  height: auto;
+}
