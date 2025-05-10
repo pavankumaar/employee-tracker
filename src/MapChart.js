@@ -8,21 +8,15 @@ import {
   Annotation
 } from "react-simple-maps";
 
-// This is a more reliable source for the world map data
 const geoUrl = "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
 const MapChart = ({ employees = [], selectedEmployee, setSelectedEmployee, tooltip, setTooltip }) => {
-  console.log('MapChart rendering with', employees.length, 'employees');
-  // State to track the last update time
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [pulseMarkers, setPulseMarkers] = useState({});
   
-  // Update the last update time whenever employees data changes
   useEffect(() => {
-    console.log('Employees updated in MapChart:', employees.length);
     setLastUpdate(new Date());
     
-    // Create a pulse effect for markers that have moved
     const newPulseMarkers = {};
     employees.forEach(employee => {
       newPulseMarkers[employee.id] = true;
@@ -30,7 +24,6 @@ const MapChart = ({ employees = [], selectedEmployee, setSelectedEmployee, toolt
     
     setPulseMarkers(newPulseMarkers);
     
-    // Remove pulse effect after 500ms
     const timer = setTimeout(() => {
       setPulseMarkers({});
     }, 500);

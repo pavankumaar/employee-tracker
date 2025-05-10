@@ -56,10 +56,12 @@ A React application that displays the live locations of employees on a world map
 
 ### Frontend Setup
 
-1. From the project root directory, install dependencies:
+1. From the project root directory, install all dependencies (both client and server):
    ```
-   npm install --legacy-peer-deps
+   npm run install-all
    ```
+   
+   This will install dependencies for both the client and server.
 
 2. Start the React application:
    ```

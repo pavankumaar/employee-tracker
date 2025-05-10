@@ -61,12 +61,10 @@ function MapPage() {
     fetchEmployees();
   }, []);
   
-  // Create refs to store the latest state values
   const employeesRef = useRef(employees);
   const selectedEmployeeRef = useRef(selectedEmployee);
   const tooltipRef = useRef(tooltip);
   
-  // Update refs when state changes
   useEffect(() => {
     employeesRef.current = employees;
   }, [employees]);
@@ -79,20 +77,16 @@ function MapPage() {
     tooltipRef.current = tooltip;
   }, [tooltip]);
   
-  // Function to update employee locations
   const updateEmployeeLocations = () => {
     const now = new Date();
     const currentEmployees = employeesRef.current;
     
     if (!currentEmployees || currentEmployees.length === 0) return;
     
-    // Create updated employees array with new locations
     const updatedEmployees = currentEmployees.map(employee => {
-      // Generate small random movement (between -0.01 and 0.01 degrees)
       const latChange = (Math.random() * 0.02 - 0.01);
       const lngChange = (Math.random() * 0.02 - 0.01);
       
-      // Calculate new coordinates
       const newLat = (parseFloat(employee.latitude) + latChange).toFixed(6);
       const newLng = (parseFloat(employee.longitude) + lngChange).toFixed(6);
       
@@ -104,10 +98,8 @@ function MapPage() {
       };
     });
     
-    // Update employees state
     setEmployees(updatedEmployees);
     
-    // Update selected employee if one is selected
     const currentSelectedEmployee = selectedEmployeeRef.current;
     if (currentSelectedEmployee) {
       const updatedSelectedEmployee = updatedEmployees.find(
@@ -118,7 +110,6 @@ function MapPage() {
       }
     }
     
-    // Update tooltip if one is shown
     const currentTooltip = tooltipRef.current;
     if (currentTooltip) {
       const updatedTooltipEmployee = updatedEmployees.find(
@@ -133,25 +124,19 @@ function MapPage() {
     }
   };
   
-  // Polling mechanism to update locations every second
   useEffect(() => {
-    console.log('Setting up location update interval');
-    // Set up polling interval (every 1 second)
     const pollingInterval = setInterval(updateEmployeeLocations, 1000);
     
-    // Clean up interval on component unmount
     return () => {
-      console.log('Clearing location update interval');
       clearInterval(pollingInterval);
     };
-  }, []); // Empty dependency array to run only once
+  }, []);
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       const response = await API.get('/api/employees');
       
-      // Update employee names with Indian names
       const updatedEmployees = response.data.map(employee => ({
         ...employee,
         name: getRandomName(),
@@ -159,7 +144,6 @@ function MapPage() {
         position: getRandomPosition()
       }));
       
-      console.log('Fetched employees:', updatedEmployees.length);
       setEmployees(updatedEmployees);
       setLoading(false);
     } catch (err) {
@@ -167,9 +151,7 @@ function MapPage() {
       setError('Failed to load employee data. Please try again later.');
       setLoading(false);
       
-      // If API fails, create some mock data
       if (employees.length === 0) {
-        console.log('Creating mock employee data');
         const mockEmployees = Array(10).fill(0).map((_, index) => ({
           id: `EMP${index + 1}`.padStart(6, '0'),
           name: getRandomName(),
@@ -187,11 +169,9 @@ function MapPage() {
 
   const generateRandomLocations = async () => {
     try {
-      // Generate random locations locally without API call
       const currentEmployees = employeesRef.current;
       
       if (!currentEmployees || currentEmployees.length === 0) {
-        console.log('No employees to update');
         return;
       }
       
@@ -203,10 +183,8 @@ function MapPage() {
         timestamp: now.toISOString()
       }));
       
-      console.log('Generated new random locations for', updatedEmployees.length, 'employees');
       setEmployees(updatedEmployees);
       
-      // Update selected employee if one is selected
       if (selectedEmployee) {
         const updatedSelectedEmployee = updatedEmployees.find(
           emp => emp.id === selectedEmployee.id
@@ -216,11 +194,10 @@ function MapPage() {
         }
       }
       
-      // Also try the API call (but don't depend on it)
       try {
         await API.post('/api/employees/random-locations');
       } catch (apiErr) {
-        console.log('API call failed, but local update succeeded');
+        // Silent fail - local update already succeeded
       }
     } catch (err) {
       console.error('Error generating random locations:', err);
