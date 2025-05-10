@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "CI=false npm run build",
+  "installCommand": "npm run install-all",
   "builds": [
     {
       "src": "api/index.js",
@@ -10,7 +12,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build",
-        "installCommand": "npm run install-all"
+        "buildCommand": "CI=false npm run build"
       }
     }
   ],
@@ -25,6 +27,7 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "CI": "false"
   }
 }
